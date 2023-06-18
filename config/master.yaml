@@ -1,0 +1,15 @@
+database:
+  host: localhost
+  port: 27017
+  dbname: test-server # db name
+  username: root
+  password: password
+  usertable: user
+  itemtable: item
+
+serverconfig:
+  port: "8080"
+
+jwt:
+  API_SECRET: yoursecretstring
+  TOKEN_HOUR_LIFESPAN: 12

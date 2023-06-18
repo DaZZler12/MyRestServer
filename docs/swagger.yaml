@@ -1,0 +1,208 @@
+basePath: /api/v1
+definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
+  github_com_RestServer_pkg_models.Car:
+    properties:
+      brand:
+        type: string
+      dom:
+        type: string
+      id:
+        type: string
+      model:
+        type: string
+      price:
+        type: number
+    type: object
+  github_com_RestServer_pkg_models.User:
+    properties:
+      age:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  github_com_RestServer_pkg_models.UserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  pkg_handlers.GetAllCarsResponse:
+    properties:
+      cars:
+        items:
+          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
+        type: array
+      totalPages:
+        type: integer
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /api/cars:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all cars with pagination
+      parameters:
+      - description: Start index for pagination
+        in: query
+        name: _start
+        type: integer
+      - description: End index for pagination
+        in: query
+        name: _end
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/pkg_handlers.GetAllCarsResponse'
+      summary: Get all cars with pagination
+      tags:
+      - Cars
+  /api/cars/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing car with the provided details
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Car details
+        in: body
+        name: carData
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated successfully
+          schema:
+            type: string
+      summary: Update a car by ID
+      tags:
+      - Cars
+  /api/cars/add:
+    post:
+      consumes:
+      - application/json
+      description: Insert a new car with the provided details
+      parameters:
+      - description: Car details
+        in: body
+        name: carData
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Insert a new car
+      tags:
+      - Cars
+  /api/signin:
+    post:
+      consumes:
+      - application/json
+      description: Sign in user with email and generate token
+      parameters:
+      - description: User input data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_RestServer_pkg_models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User Logged In
+          schema:
+            type: string
+      summary: Create an Item
+      tags:
+      - Authentication
+  /api/signup:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account with the provided details
+      parameters:
+      - description: User details
+        in: body
+        name: userData
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_RestServer_pkg_models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Register a new user account
+      tags:
+      - Users
+  /cars/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a car based on its ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Delete car by ID
+      tags:
+      - Cars
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
