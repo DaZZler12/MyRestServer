@@ -6,7 +6,8 @@ import (
 
 	"github.com/DaZZler12/MyRestServer/pkg/errorutil"
 	"github.com/DaZZler12/MyRestServer/pkg/models"
-	"github.com/DaZZler12/MyRestServer/pkg/utils"
+
+	// "github.com/DaZZler12/MyRestServer/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -57,21 +58,20 @@ func (h *Handler) GetAllItems(c *gin.Context) {
 		return
 	}
 
-	end, err := strconv.Atoi(c.DefaultQuery("_end", "3"))
+	end, err := strconv.Atoi(c.DefaultQuery("_end", "4"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end value"})
 		return
 	}
-	pagination := utils.Pagination{
-		PageNumber: (start / end) + 1,
-		PageSize:   end - start,
+	if start < 0 || end < 0 || start > end {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Start or End Value"})
+		return
 	}
-	// fmt.Println("filter for  handler: ", filters)
-	cars, total, err := h.Service.GetAllItems(pagination, filters)
+	cars, total, err := h.Service.GetAllItems(start, end, filters)
 	if err != nil {
 		errorutil.HandleErrorResponse(c, err)
 		return
 	}
+	c.Header("X-Total-Count", strconv.Itoa(int(total)))
 	c.JSON(http.StatusOK, gin.H{"message": "success", "items": cars, "totalPages": total})
-
 }

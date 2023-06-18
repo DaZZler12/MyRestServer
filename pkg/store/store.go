@@ -2,14 +2,12 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"sync"
 
 	"github.com/DaZZler12/MyRestServer/pkg/config"
 	"github.com/DaZZler12/MyRestServer/pkg/database"
 	"github.com/DaZZler12/MyRestServer/pkg/models"
-	"github.com/DaZZler12/MyRestServer/pkg/utils"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -107,24 +105,29 @@ func (s *dbStore) InsertItem(data models.Item) error {
 
 	return err
 }
-func (s *dbStore) GetAllItems(pagination utils.Pagination, filters bson.D) ([]models.Item, int64, error) {
+func (s *dbStore) GetAllItems(start int, end int, filters bson.D) ([]models.Item, int64, error) {
+	// Calculate the limit and skip values for pagination
+	limit := end - start + 1
+	skip := start
+
 	collection := s.db.Collection("item")
 	// Set options for sorting or filtering if required
 	findOptions := options.Find().SetSort(bson.M{"created_at": -1})
 	// Apply pagination
-	skip := int64((pagination.PageNumber - 1) * pagination.PageSize)
-	findOptions.SetSkip(skip)
-	findOptions.SetLimit(int64(pagination.PageSize))
+	// 	skip := int64((pagination.PageNumber - 1) * pagination.PageSize)
+	// 	findOptions.SetSkip(skip)
+	// findOptions.SetLimit(int64(pagination.PageSize))
 
+	// Query the database with limit and skip parameters
+	findOptions.SetLimit(int64(limit)).SetSkip(int64(skip))
 	// Find items with pagination
 	cur, err := collection.Find(context.Background(), filters, findOptions)
-	fmt.Println("error from store", cur)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer cur.Close(context.Background())
 
-	var items []models.Item
+	var itemslice []models.Item
 
 	// Iterate over the result cursor
 	for cur.Next(context.Background()) {
@@ -132,13 +135,15 @@ func (s *dbStore) GetAllItems(pagination utils.Pagination, filters bson.D) ([]mo
 		if err := cur.Decode(&item); err != nil {
 			return nil, 0, err
 		}
-		items = append(items, item)
+		itemslice = append(itemslice, item)
 	}
 
 	if err := cur.Err(); err != nil {
 		return nil, 0, err
 	}
-
+	if len(itemslice) == 0 {
+		return nil, 0, errors.New("Documents not found")
+	}
 	totalCount, err := collection.CountDocuments(context.Background(), filters)
 	if err != nil {
 		return nil, 0, err
@@ -146,7 +151,7 @@ func (s *dbStore) GetAllItems(pagination utils.Pagination, filters bson.D) ([]mo
 	// w := context.Background().Value("responseWriter").(http.ResponseWriter)
 	// Set the X-Total-Count header in the response
 	// w.Header().Set("X-Total-Count", strconv.Itoa(int(totalCount)))
-	return items, totalCount, nil
+	return itemslice, totalCount, nil
 }
 
 func (s *dbStore) UpdateItemByID(filter bson.M, updater bson.M) error {
@@ -181,4 +186,9 @@ func (s *dbStore) DeleteItemByName(filter bson.M) error {
 		return errors.Wrap(err, "Errors in deleting")
 	}
 	return nil
+}
+
+func (s *dbStore) Count(filters bson.D) (int64, error) {
+	collection := s.db.Collection("item")
+	return collection.CountDocuments(context.Background(), filters, &options.CountOptions{})
 }
