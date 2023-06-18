@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/DaZZler12/MyRestServer/pkg/config"
@@ -42,6 +43,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 	defer database.DisconnectMongoDB(context.Background()) // disconnect from mongo if application shutdown.
+	server.GET("/swagger/*any", gin.WrapH(http.FileServer(http.Dir("./docs"))))
 	public := server.Group("/api")
 	h := handlers.New()
 	publicroutes.PublicRoutes(public, h)

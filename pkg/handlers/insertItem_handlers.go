@@ -8,18 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InsertItem handles the POST /cars endpoint.
-
 // InsertItem godoc
 // @Summary Insert a new item
 // @Description Insert a new item with the provided details
 // @Tags Items
 // @Accept json
 // @Produce json
-// @Param itemData body models.Item true "Car details"
+// @Param itemData body models.Item true "Item details"
 // @Success 201 {object} gin.H "success"
 // @Failure      400  {object}  gin.H    "message: Bad Request"
-// @Router /api/items/add [post]
+// @Router /api/items [post]
 func (h *Handler) InsertItem(c *gin.Context) {
 	var itemData models.Item
 	if c.BindJSON(&itemData) != nil {

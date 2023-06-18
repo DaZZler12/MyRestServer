@@ -17,36 +17,22 @@ type GetAllItemsResponse struct {
 	TotalPages int64         `json:"totalPages"`
 }
 
-// GetAllItems retrieves all items with pagination.
-// @Summary Get all items with pagination
-// @Description Retrieve all items with pagination
+// GetAllItems godoc
+// @Summary Get all items with pagination and optional query param as brand
+// @Description Retrieve all items with pagination and also an optional query param added as brand
 // @Tags Items
 // @Accept json
 // @Produce json
 // @Param _start query integer false "Start index for pagination"
 // @Param _end query integer false "End index for pagination"
+// @Param brand query string false "Brand filter"
 // @Success 200 {object} GetAllItemsResponse "success"
+// @Failure 400 {object} gin.H "message: Invalid Start or End Value"
+// @Failure 500 {object} gin.H "message": "Internal Server Error"
 // @Router /api/items [get]
 func (h *Handler) GetAllItems(c *gin.Context) {
 	filters := bson.D{}            //defining the filter
 	brandParam := c.Query("brand") //search by brand this are
-	// if idParam != "" {
-	// 	// Retrieve a specific car by ID
-	// 	id, err := primitive.ObjectIDFromHex(idParam)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid car ID"})
-	// 		return
-	// 	}
-
-	// 	car, err := h.Service.GetCarByID(id)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve car"})
-	// 		return
-	// 	}
-
-	// 	c.JSON(http.StatusOK, gin.H{"car": car})
-	// 	return
-	// }
 	if brandParam != "" {
 		filters = append(filters, bson.E{
 			Key: "brand", Value: brandParam,
@@ -67,11 +53,11 @@ func (h *Handler) GetAllItems(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Start or End Value"})
 		return
 	}
-	cars, total, err := h.Service.GetAllItems(start, end, filters)
+	items, total, err := h.Service.GetAllItems(start, end, filters)
 	if err != nil {
 		errorutil.HandleErrorResponse(c, err)
 		return
 	}
 	c.Header("X-Total-Count", strconv.Itoa(int(total)))
-	c.JSON(http.StatusOK, gin.H{"message": "success", "items": cars, "totalPages": total})
+	c.JSON(http.StatusOK, gin.H{"message": "success", "items": items, "totalPages": total})
 }

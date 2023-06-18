@@ -10,24 +10,15 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/cars": {
+        "/api/items": {
             "get": {
-                "description": "Retrieve all cars with pagination",
+                "description": "Retrieve all items with pagination and also an optional query param added as brand",
                 "consumes": [
                     "application/json"
                 ],
@@ -35,9 +26,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cars"
+                    "Items"
                 ],
-                "summary": "Get all cars with pagination",
+                "summary": "Get all items with pagination and optional query param as brand",
                 "parameters": [
                     {
                         "type": "integer",
@@ -50,21 +41,37 @@ const docTemplate = `{
                         "description": "End index for pagination",
                         "name": "_end",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Brand filter",
+                        "name": "brand",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "success",
                         "schema": {
-                            "$ref": "#/definitions/pkg_handlers.GetAllCarsResponse"
+                            "$ref": "#/definitions/pkg_handlers.GetAllItemsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "message: Invalid Start or End Value",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "message\": \"Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
                         }
                     }
                 }
-            }
-        },
-        "/api/cars/add": {
-            "post": {
-                "description": "Insert a new car with the provided details",
+            },
+            "put": {
+                "description": "Update an existing item with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -72,17 +79,56 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cars"
+                    "Items"
                 ],
-                "summary": "Insert a new car",
+                "summary": "Update a item by Name",
                 "parameters": [
                     {
-                        "description": "Car details",
-                        "name": "carData",
+                        "type": "string",
+                        "description": "Item item_name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Item details",
+                        "name": "itemData",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_RestServer_pkg_models.Car"
+                            "$ref": "#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "message\": \"Updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Insert a new item with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Insert a new item",
+                "parameters": [
+                    {
+                        "description": "Item details",
+                        "name": "itemData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item"
                         }
                     }
                 ],
@@ -92,13 +138,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
+                    },
+                    "400": {
+                        "description": "message: Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
                     }
                 }
-            }
-        },
-        "/api/cars/{id}": {
-            "put": {
-                "description": "Update an existing car with the provided details",
+            },
+            "delete": {
+                "description": "Delete an item based on its Item_Name",
                 "consumes": [
                     "application/json"
                 ],
@@ -106,32 +156,35 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Cars"
+                    "Items"
                 ],
-                "summary": "Update a car by ID",
+                "summary": "Delete item by Item_Name",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Car ID",
-                        "name": "id",
+                        "description": "Item_Name",
+                        "name": "nameParam",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Car details",
-                        "name": "carData",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/github_com_RestServer_pkg_models.Car"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated successfully",
+                        "description": "message\": \"Deleted successfully",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "message\": \"Failed to retrieve item",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "message\": \"Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
                         }
                     }
                 }
@@ -157,15 +210,21 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_RestServer_pkg_models.UserInput"
+                            "$ref": "#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.UserInput"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User Logged In",
+                        "description": "message\": \"Log in success",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "message\": \"Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
                         }
                     }
                 }
@@ -191,7 +250,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_RestServer_pkg_models.User"
+                            "$ref": "#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.User"
                         }
                     }
                 ],
@@ -201,41 +260,9 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
-                    }
-                }
-            }
-        },
-        "/cars/{id}": {
-            "delete": {
-                "description": "Delete a car based on its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cars"
-                ],
-                "summary": "Delete car by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "500": {
+                        "description": "message\": \"Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -249,16 +276,19 @@ const docTemplate = `{
             "type": "object",
             "additionalProperties": {}
         },
-        "github_com_RestServer_pkg_models.Car": {
+        "github_com_DaZZler12_MyRestServer_pkg_models.Item": {
             "type": "object",
             "properties": {
                 "brand": {
                     "type": "string"
                 },
-                "dom": {
+                "created_at": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "item_name": {
                     "type": "string"
                 },
                 "model": {
@@ -266,13 +296,19 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
                 }
             }
         },
-        "github_com_RestServer_pkg_models.User": {
+        "github_com_DaZZler12_MyRestServer_pkg_models.User": {
             "type": "object",
             "properties": {
-                "age": {
+                "country": {
                     "type": "string"
                 },
                 "email": {
@@ -283,27 +319,30 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
-        "github_com_RestServer_pkg_models.UserInput": {
+        "github_com_DaZZler12_MyRestServer_pkg_models.UserInput": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "name": {
+                "password": {
                     "type": "string"
                 }
             }
         },
-        "pkg_handlers.GetAllCarsResponse": {
+        "pkg_handlers.GetAllItemsResponse": {
             "type": "object",
             "properties": {
-                "cars": {
+                "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_RestServer_pkg_models.Car"
+                        "$ref": "#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item"
                     }
                 },
                 "totalPages": {
@@ -311,26 +350,17 @@ const docTemplate = `{
                 }
             }
         }
-    },
-    "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
-        }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Swagger Example API",
-	Description:      "This is a sample server celler server.",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

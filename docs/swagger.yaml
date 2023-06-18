@@ -1,24 +1,29 @@
-basePath: /api/v1
 definitions:
   gin.H:
     additionalProperties: {}
     type: object
-  github_com_RestServer_pkg_models.Car:
+  github_com_DaZZler12_MyRestServer_pkg_models.Item:
     properties:
       brand:
         type: string
-      dom:
+      created_at:
         type: string
       id:
+        type: string
+      item_name:
         type: string
       model:
         type: string
       price:
         type: number
+      updated_at:
+        type: string
+      year:
+        type: integer
     type: object
-  github_com_RestServer_pkg_models.User:
+  github_com_DaZZler12_MyRestServer_pkg_models.User:
     properties:
-      age:
+      country:
         type: string
       email:
         type: string
@@ -26,45 +31,62 @@ definitions:
         type: string
       name:
         type: string
+      password:
+        type: string
     type: object
-  github_com_RestServer_pkg_models.UserInput:
+  github_com_DaZZler12_MyRestServer_pkg_models.UserInput:
     properties:
       email:
         type: string
-      name:
+      password:
         type: string
     type: object
-  pkg_handlers.GetAllCarsResponse:
+  pkg_handlers.GetAllItemsResponse:
     properties:
-      cars:
+      items:
         items:
-          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
+          $ref: '#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item'
         type: array
       totalPages:
         type: integer
     type: object
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
-host: localhost:8080
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: This is a sample server celler server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
-  version: "1.0"
+  contact: {}
 paths:
-  /api/cars:
+  /api/items:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an item based on its Item_Name
+      parameters:
+      - description: Item_Name
+        in: path
+        name: nameParam
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message": "Deleted successfully'
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: 'message": "Failed to retrieve item'
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'message": "Internal Server Error'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Delete item by Item_Name
+      tags:
+      - Items
     get:
       consumes:
       - application/json
-      description: Retrieve all cars with pagination
+      description: Retrieve all items with pagination and also an optional query param
+        added as brand
       parameters:
       - description: Start index for pagination
         in: query
@@ -74,55 +96,39 @@ paths:
         in: query
         name: _end
         type: integer
+      - description: Brand filter
+        in: query
+        name: brand
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/pkg_handlers.GetAllCarsResponse'
-      summary: Get all cars with pagination
-      tags:
-      - Cars
-  /api/cars/{id}:
-    put:
-      consumes:
-      - application/json
-      description: Update an existing car with the provided details
-      parameters:
-      - description: Car ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Car details
-        in: body
-        name: carData
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Updated successfully
+            $ref: '#/definitions/pkg_handlers.GetAllItemsResponse'
+        "400":
+          description: 'message: Invalid Start or End Value'
           schema:
-            type: string
-      summary: Update a car by ID
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'message": "Internal Server Error'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Get all items with pagination and optional query param as brand
       tags:
-      - Cars
-  /api/cars/add:
+      - Items
     post:
       consumes:
       - application/json
-      description: Insert a new car with the provided details
+      description: Insert a new item with the provided details
       parameters:
-      - description: Car details
+      - description: Item details
         in: body
-        name: carData
+        name: itemData
         required: true
         schema:
-          $ref: '#/definitions/github_com_RestServer_pkg_models.Car'
+          $ref: '#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item'
       produces:
       - application/json
       responses:
@@ -130,9 +136,39 @@ paths:
           description: success
           schema:
             $ref: '#/definitions/gin.H'
-      summary: Insert a new car
+        "400":
+          description: 'message: Bad Request'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Insert a new item
       tags:
-      - Cars
+      - Items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing item with the provided details
+      parameters:
+      - description: Item item_name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Item details
+        in: body
+        name: itemData
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.Item'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message": "Updated successfully'
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Update a item by Name
+      tags:
+      - Items
   /api/signin:
     post:
       consumes:
@@ -144,14 +180,18 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/github_com_RestServer_pkg_models.UserInput'
+          $ref: '#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.UserInput'
       produces:
       - application/json
       responses:
         "200":
-          description: User Logged In
+          description: 'message": "Log in success'
           schema:
-            type: string
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: 'message": "Internal Server Error'
+          schema:
+            $ref: '#/definitions/gin.H'
       summary: Create an Item
       tags:
       - Authentication
@@ -166,7 +206,7 @@ paths:
         name: userData
         required: true
         schema:
-          $ref: '#/definitions/github_com_RestServer_pkg_models.User'
+          $ref: '#/definitions/github_com_DaZZler12_MyRestServer_pkg_models.User'
       produces:
       - application/json
       responses:
@@ -174,35 +214,11 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/gin.H'
+        "500":
+          description: 'message": "Internal Server Error'
+          schema:
+            $ref: '#/definitions/gin.H'
       summary: Register a new user account
       tags:
       - Users
-  /cars/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a car based on its ID
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/gin.H'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/gin.H'
-      summary: Delete car by ID
-      tags:
-      - Cars
-securityDefinitions:
-  BasicAuth:
-    type: basic
 swagger: "2.0"

@@ -9,11 +9,11 @@ import (
 
 func (s *Service) GetItemByID(id primitive.ObjectID) (models.Item, error) {
 	filter := bson.M{"id": id}
-	car, err := s.store.GetItemByID(filter)
+	item, err := s.store.GetItemByID(filter)
 	if err != nil {
 		// Handle the error using the spearetaerror package
-		return models.Item{}, serror.NotFoundError("Error in finding car")
+		return models.Item{}, serror.NotFoundError("Error in finding item")
 	}
-	return car, nil
+	return item, nil
 
 }

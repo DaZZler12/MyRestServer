@@ -114,10 +114,6 @@ func (s *dbStore) GetAllItems(start int, end int, filters bson.D) ([]models.Item
 	// Set options for sorting or filtering if required
 	findOptions := options.Find().SetSort(bson.M{"created_at": -1})
 	// Apply pagination
-	// 	skip := int64((pagination.PageNumber - 1) * pagination.PageSize)
-	// 	findOptions.SetSkip(skip)
-	// findOptions.SetLimit(int64(pagination.PageSize))
-
 	// Query the database with limit and skip parameters
 	findOptions.SetLimit(int64(limit)).SetSkip(int64(skip))
 	// Find items with pagination
@@ -148,9 +144,6 @@ func (s *dbStore) GetAllItems(start int, end int, filters bson.D) ([]models.Item
 	if err != nil {
 		return nil, 0, err
 	}
-	// w := context.Background().Value("responseWriter").(http.ResponseWriter)
-	// Set the X-Total-Count header in the response
-	// w.Header().Set("X-Total-Count", strconv.Itoa(int(totalCount)))
 	return itemslice, totalCount, nil
 }
 

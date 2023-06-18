@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SignUp handles the POST /signup endpoint.
+// SignUp godoc
 // @Summary Register a new user account
 // @Description Register a new user account with the provided details
 // @Tags Users
@@ -16,6 +16,7 @@ import (
 // @Produce json
 // @Param userData body models.User true "User details"
 // @Success 201 {object} gin.H
+// @Failure 500 {object} gin.H "message": "Internal Server Error"
 // @Router /api/signup [post]
 func (h *Handler) SignUp(c *gin.Context) {
 	var userData models.User

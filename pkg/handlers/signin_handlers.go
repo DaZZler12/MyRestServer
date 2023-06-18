@@ -16,7 +16,8 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        user body models.UserInput true "User input data"
-// @Success 200 {string} string "User Logged In"
+// @Success 200 {object} gin.H "message": "Log in success"
+// @Failure 500 {object} gin.H "message": "Internal Server Error"
 // @Router       /api/signin [post]
 func (h *Handler) SignIn(c *gin.Context) {
 	var userData models.UserInput

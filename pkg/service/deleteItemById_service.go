@@ -11,7 +11,7 @@ func (s *Service) DeleteItemById(id primitive.ObjectID) error {
 	err := s.store.DeleteItemById(filter)
 	if err != nil {
 		// Handle the error using the spearetaerror package
-		return serror.NotFoundError("Error in finding car")
+		return serror.NotFoundError("Error in finding item")
 	}
 	return nil
 
