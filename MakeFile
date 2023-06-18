@@ -1,0 +1,9 @@
+swagger:
+	swag init --dir ./cmd/ --output ./cmd/docs --pd --parseInternal --parseDepth 10  && rm cmd/docs/docs.go
+
+installmockery:
+	go install github.com/vektra/mockery/v2@v2.15.0
+
+generatemocks: installmockery
+	export GOFLAGS=-buildvcs=false && \
+	mockery --all --keeptree --inpackage
