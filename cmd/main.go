@@ -48,5 +48,5 @@ func main() {
 	privateRoutes := server.Group("/api/items")
 	privateRoutes.Use(middlewares.JwtAuthMiddleware())
 	privateroutes.Privateroutes(privateRoutes, h)
-	log.Fatal(server.Run(":8080"))
+	log.Fatal(server.Run(":5050"))
 }

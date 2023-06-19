@@ -7,32 +7,23 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.16.0
-	github.com/stretchr/testify v1.8.4 // indirect
+	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/swag v1.16.1
 	go.mongodb.org/mongo-driver v1.11.7
 )
 
 require (
 	github.com/gin-contrib/cors v1.4.0
+	github.com/hashicorp/vault-plugin-database-elasticsearch v0.13.2
 	go.elastic.co/apm/module/apmgin v1.15.0
 	golang.org/x/crypto v0.9.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
 require (
-	github.com/chigopher/pathlib v0.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/iancoleman/strcase v0.2.0 // indirect
-	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jinzhu/copier v0.3.5 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rs/zerolog v1.29.0 // indirect
-	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/vektra/mockery/v2 v2.30.1 // indirect
-	golang.org/x/term v0.8.0 // indirect
 )
 
 require (
@@ -56,7 +47,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jcchavezs/porto v0.1.0 // indirect
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901 // indirect
@@ -80,7 +71,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	github.com/swaggo/gin-swagger v1.6.0
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
