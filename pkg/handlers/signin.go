@@ -10,13 +10,14 @@ import (
 )
 
 // SignIn godoc
-// @Summary      Create an Item
+// @Summary      SignIn
 // @Description  Sign in user with email and generate token
 // @Tags         Authentication
 // @Accept       json
 // @Produce      json
 // @Param        user body models.UserInput true "User input data"
 // @Success 200 {object} gin.H "message": "Log in success"
+// @Failure 406 {object} gin.H "message": "Provide necessery details"
 // @Failure 500 {object} gin.H "message": "Internal Server Error"
 // @Router       /api/signin [post]
 func (h *Handler) SignIn(c *gin.Context) {
@@ -28,13 +29,13 @@ func (h *Handler) SignIn(c *gin.Context) {
 	}
 
 	user, err := h.Service.SignIn(userData.Email, userData.Password)
-	token, _err := utils.GenerateToken(user.ID.String())
-	if _err != nil {
+	if err != nil {
 		errorutil.HandleErrorResponse(c, err)
 		return
 	}
-	if err != nil {
-		errorutil.HandleErrorResponse(c, err)
+	token, _err := utils.GenerateToken(user.ID.String())
+	if _err != nil {
+		errorutil.HandleErrorResponse(c, _err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Log in success", "token": token})

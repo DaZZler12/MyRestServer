@@ -24,9 +24,9 @@ var instance Store = (*dbStore)(nil)
 var once sync.Once
 
 // GetStore returns the singleton instance of the Store.
-func GetStore(cfg config.DatabaseConfig) Store {
+func GetStore() Store {
 	once.Do(func() {
-		db, err := database.ConnectToMongoDB(cfg)
+		db, err := database.ConnectToMongoDB(*config.Dbconfig)
 		if err != nil {
 			log.Fatal(err)
 		}

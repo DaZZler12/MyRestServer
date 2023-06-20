@@ -20,16 +20,34 @@ import (
 
 func init() {
 	configFilePath := "../config/master.yaml"
-	cfg, err := config.ReadConfig(configFilePath)
+	_, err := config.ReadConfig(configFilePath)
 	if err != nil {
-		panic(err)
+		log.Fatal("Error on App-Startup: ", err)
 	}
-
-	storeInstance := store.GetStore(cfg.Database)
+	storeInstance := store.GetStore()
 	userService := service.NewUserService(storeInstance)
 	handlers.SetUserService(userService)
 }
 
+// @title           Swagger Example API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	server := gin.Default()
 	server.Use(apmgin.Middleware(server))
@@ -48,5 +66,5 @@ func main() {
 	privateRoutes := server.Group("/api/items")
 	privateRoutes.Use(middlewares.JwtAuthMiddleware())
 	privateroutes.Privateroutes(privateRoutes, h)
-	log.Fatal(server.Run(":5050"))
+	log.Fatal(server.Run(":8080"))
 }

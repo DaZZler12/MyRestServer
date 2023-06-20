@@ -4,11 +4,9 @@ database:
   dbname: test-server # db name
   username: root
   password: password
-  usertable: user
-  itemtable: item
 
 serverconfig:
-  port: "8080"
+  port: "5050"
 
 jwt:
   API_SECRET: yoursecretstring

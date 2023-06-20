@@ -6,47 +6,29 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/DaZZler12/MyRestServer/pkg/config"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 func GenerateToken(user_id string) (string, error) {
-	viper.SetConfigFile("../config/master.yaml")
-	err := viper.ReadInConfig()
-	if err != nil {
-		return "", fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	token_lifespan, err := strconv.Atoi(viper.GetString("jwt.TOKEN_HOUR_LIFESPAN"))
-
-	if err != nil {
-		return "", err
-	}
-
+	token_lifespan := config.Jwtconfig.TOKEN_HOUR_LIFESPAN
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["user_id"] = user_id
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(token_lifespan)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString([]byte(viper.GetString("jwt.API_SECRET")))
+	return token.SignedString([]byte(config.Jwtconfig.API_SECRET))
 
 }
 
 func TokenValid(c *gin.Context) error {
-	viper.SetConfigFile("../config/master.yaml")
-	err := viper.ReadInConfig()
-	if err != nil {
-		return fmt.Errorf("failed to read config file: %w", err)
-	}
-
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(viper.GetString("jwt.API_SECRET")), nil
+		return []byte(config.Jwtconfig.API_SECRET), nil
 	})
 	fmt.Println("2:", token)
 	if err != nil {
@@ -73,13 +55,12 @@ func ExtractToken(c *gin.Context) string {
 }
 
 func ExtractTokenID(c *gin.Context) (uint, error) {
-	viper.SetConfigFile("../config/master.yaml")
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(viper.GetString("jwt.API_SECRET")), nil
+		return []byte(config.Jwtconfig.API_SECRET), nil
 	})
 	if err != nil {
 		return 0, err
